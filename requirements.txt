@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+lxml
+PyMuPDF
+google-genai
+
+
+python-dotenv
+APScheduler
