@@ -60,8 +60,9 @@ def send_telegram_push(content: str):
 
 def notify(insight: str, reports: list[dict]) -> str:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    today = date.today().strftime("%Y-%m-%d")
-    filepath = os.path.join(OUTPUT_DIR, f"브리핑_{today}.md")
+    from datetime import datetime
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    filepath = os.path.join(OUTPUT_DIR, f"브리핑_{timestamp}.md")
 
     content = _build_markdown(insight, reports)
     with open(filepath, "w", encoding="utf-8") as f:
