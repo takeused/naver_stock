@@ -2,8 +2,8 @@ name: Daily Naver Stock Briefing
 
 on:
   schedule:
-    # 09:30 KST is 00:30 UTC. Runs Monday to Friday (1-5)
-    - cron: '30 0 * * 1-5'
+    # 08:00 KST is 23:00 UTC (previous day). Runs Monday to Friday KST (Sun-Thu UTC)
+    - cron: '0 23 * * 0-4'
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
