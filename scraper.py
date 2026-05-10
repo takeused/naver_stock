@@ -53,8 +53,7 @@ def _fetch_page(url: str, page: int) -> BeautifulSoup:
 
 
 def get_today_reports(category: str, url: str) -> list[dict]:
-    # today = date.today().strftime("%y.%m.%d")
-    today = "26.05.08" # 아우의 평일 테스트용 (금요일)
+    today = date.today().strftime("%y.%m.%d")
     reports = []
     page = 1
 
