@@ -1,6 +1,7 @@
 import os
+import requests
 from datetime import date
-from config import OUTPUT_DIR
+from config import OUTPUT_DIR, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 
 def _build_markdown(insight: str, reports: list[dict]) -> str:
@@ -30,6 +31,33 @@ def _build_markdown(insight: str, reports: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def send_telegram_push(content: str):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("  [알림] 텔레그램 Token/Chat ID가 설정되지 않아 푸시 알림을 생략합니다.")
+        return
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    
+    # 텔레그램 메시지 길이 제한(4096자)을 고려하여 4000자씩 분할 전송
+    max_length = 4000
+    chunks = [content[i:i+max_length] for i in range(0, len(content), max_length)]
+    
+    for i, chunk in enumerate(chunks):
+        payload = {
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": chunk,
+            "disable_web_page_preview": True
+        }
+        try:
+            resp = requests.post(url, json=payload, timeout=10)
+            resp.raise_for_status()
+            print(f"  [푸시 완료] 텔레그램 전송 성공! ({i+1}/{len(chunks)})")
+        except Exception as e:
+            print(f"  [푸시 실패] 텔레그램 전송 오류: {e}")
+            if hasattr(resp, "text"):
+                print(f"  [에러 상세]: {resp.text}")
+
+
 def notify(insight: str, reports: list[dict]) -> str:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     today = date.today().strftime("%Y-%m-%d")
@@ -40,6 +68,10 @@ def notify(insight: str, reports: list[dict]) -> str:
         f.write(content)
 
     print(f"  [저장 완료] {filepath}")
+
+    # 텔레그램 전송
+    send_telegram_push(content)
+
     return filepath
 
 
