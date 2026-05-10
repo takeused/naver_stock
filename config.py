@@ -29,8 +29,8 @@ MAJOR_BROKERS = {
 
 TOP_N_PER_CATEGORY = 5
 PDF_MAX_PAGES = 3
-FLASH_MODEL = "gemma-4-31b-it"   # 1차 개별 요약
-PRO_MODEL = "gemma-4-31b-it"    # 2차 종합 인사이트
+FLASH_MODEL = "gemini-2.5-flash"   # 1차 개별 요약
+PRO_MODEL = "gemini-2.5-pro"    # 2차 종합 인사이트
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",

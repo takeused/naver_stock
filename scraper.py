@@ -53,7 +53,8 @@ def _fetch_page(url: str, page: int) -> BeautifulSoup:
 
 
 def get_today_reports(category: str, url: str) -> list[dict]:
-    today = date.today().strftime("%y.%m.%d")
+    # today = date.today().strftime("%y.%m.%d")
+    today = "26.05.08" # 아우의 평일 테스트용 (금요일)
     reports = []
     page = 1
 
@@ -69,7 +70,7 @@ def get_today_reports(category: str, url: str) -> list[dict]:
             if not cols:
                 continue
 
-            date_text = cols[-1].get_text(strip=True)
+            date_text = cols[-2].get_text(strip=True) if len(cols) >= 2 else ""
             if not date_text:
                 continue
 
@@ -89,8 +90,8 @@ def get_today_reports(category: str, url: str) -> list[dict]:
                 broker_tag = row.select_one("td:nth-child(3)")
                 broker = broker_tag.get_text(strip=True) if broker_tag else ""
 
-                # 조회수 (마지막에서 두 번째 td)
-                views = _parse_views(cols[-2].get_text(strip=True)) if len(cols) >= 2 else 0
+                # 조회수 (마지막 td)
+                views = _parse_views(cols[-1].get_text(strip=True)) if len(cols) >= 1 else 0
 
                 reports.append({
                     "category": category,
@@ -101,7 +102,8 @@ def get_today_reports(category: str, url: str) -> list[dict]:
                     "date": date_text,
                 })
 
-            elif found_today:
+            elif date_text < today:
+                # 오늘보다 이전 날짜가 나오면 더 이상 찾을 필요 없음
                 stop = True
                 break
 
