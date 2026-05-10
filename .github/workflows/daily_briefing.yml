@@ -1,0 +1,45 @@
+name: Daily Naver Stock Briefing
+
+on:
+  schedule:
+    # 09:30 KST is 00:30 UTC. Runs Monday to Friday (1-5)
+    - cron: '30 0 * * 1-5'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  run-scraper-and-analyzer:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run main pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python main.py
+
+      - name: Commit and push generated briefing
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add output/
+          # Only commit if there are changes
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "docs: auto-generate daily briefing"
+            git push
+          else
+            echo "No changes to commit"
+          fi
