@@ -35,11 +35,15 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add output/
-          # Only commit if there are changes
-          if ! git diff-index --quiet HEAD; then
-            git commit -m "docs: auto-generate daily briefing"
-            git push
+          if [ -d "output" ]; then
+            git add -f output/
+            # Only commit if there are changes
+            if ! git diff-index --quiet HEAD; then
+              git commit -m "docs: auto-generate daily briefing"
+              git push
+            else
+              echo "No changes to commit"
+            fi
           else
-            echo "No changes to commit"
+            echo "No output directory generated, skipping commit."
           fi
